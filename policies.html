@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tattoo Policies & FAQ | Taylor Helman Tattoo</title>
+  <style>
+    :root {
+      --bg: #111111;
+      --card: #1b1b1b;
+      --card-2: #242424;
+      --text: #f5f5f5;
+      --muted: #c9c9c9;
+      --accent: #d6a24a;
+      --accent-2: #f0c36d;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 18px 50px rgba(0,0,0,0.35);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(214,162,74,0.16), transparent 28%),
+        linear-gradient(180deg, #0f0f10 0%, #151515 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
+      padding: 36px 28px 24px;
+      background: linear-gradient(180deg, rgba(214,162,74,0.16), rgba(214,162,74,0.02));
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(214,162,74,0.14);
+      color: var(--accent-2);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.05;
+    }
+
+    .sub {
+      margin: 14px auto 0;
+      max-width: 650px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .notice {
+      margin: 22px auto 0;
+      max-width: 700px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .section {
+      padding: 24px 22px 28px;
+    }
+
+    .policy {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .policy h2 {
+      margin: 0 0 12px 0;
+      font-size: 22px;
+    }
+
+    .policy p, .policy li {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .policy ul {
+      margin: 10px 0 0 20px;
+      padding: 0;
+    }
+
+    .footer {
+      padding: 0 22px 24px;
+      text-align: center;
+      color: #a9a9a9;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    a.button {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 800;
+      background: linear-gradient(180deg, var(--accent-2), var(--accent));
+      color: #161616;
+    }
+
+    @media (max-width: 640px) {
+      .hero { padding: 30px 18px 20px; }
+      .section { padding: 20px 16px 22px; }
+      .footer { padding: 0 16px 18px; }
+      .policy h2 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="hero">
+        <div class="badge">Soul Fire Tattoo Studio</div>
+        <h1>Tattoo Policies & FAQ</h1>
+        <p class="sub">
+          Please review these policies before submitting a tattoo request. Submitting a request indicates that you have read and agree to these policies.
+        </p>
+
+        <div class="notice">
+          These policies help keep the booking process clear, fair, and organized for everyone. If you have questions after reviewing them, please reach out before booking.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="policy">
+          <h2>Deposit Policy</h2>
+          <p>Deposits are required to secure tattoo appointments. Deposits go toward the final cost of your tattoo unless otherwise stated.</p>
+          <ul>
+            <li>Deposits are non-refundable.</li>
+            <li>Deposits may be forfeited for no-shows, repeated reschedules, or late cancellations.</li>
+            <li>No appointment is held until the deposit has been received.</li>
+          </ul>
+        </div>
+
+        <div class="policy">
+          <h2>Cancellation & Rescheduling Policy</h2>
+          <p>Please provide as much notice as possible if you need to reschedule.</p>
+          <ul>
+            <li>Late cancellations may result in loss of deposit.</li>
+            <li>Repeated rescheduling may require a new deposit.</li>
+            <li>No-shows may not be eligible to rebook.</li>
+          </ul>
+        </div>
+
+        <div class="policy">
+          <h2>Touch-Up Policy</h2>
+          <p>Touch-ups are reserved for rare healing inconsistencies and are not part of the standard tattoo process.</p>
+          <ul>
+            <li>Complimentary touch-ups are only available within Taylor’s stated touch-up window.</li>
+            <li>The touch-up must be scheduled within that window, not just requested.</li>
+            <li>Touch-ups are for small healed areas only and not for design changes, additions, or reworking the tattoo.</li>
+            <li>Healed photos may be required before approval.</li>
+          </ul>
+        </div>
+
+        <div class="policy">
+          <h2>Design Policy</h2>
+          <p>All tattoos are custom and designed by Taylor to best suit her artistic style and your body placement.</p>
+          <ul>
+            <li>Taylor specializes in fine line, micro realism, and realism tattoos.</li>
+            <li>Designs may be adjusted for readability, longevity, and flow on the body.</li>
+            <li>Vague requests may delay the booking process.</li>
+            <li>Reference images are used as inspiration, not for exact copying.</li>
+          </ul>
+        </div>
+
+        <div class="policy">
+          <h2>Consultation Policy</h2>
+          <p>Some projects may require additional discussion before booking.</p>
+          <ul>
+            <li>Clear reference images and placement details help speed up approval.</li>
+            <li>Some concepts may be declined if they are not a good fit for Taylor’s style.</li>
+          </ul>
+        </div>
+
+        <div class="policy">
+          <h2>Billing & Pricing</h2>
+          <p>Pricing depends on size, placement, detail, and overall complexity.</p>
+          <ul>
+            <li>Quotes are estimates unless otherwise stated.</li>
+            <li>Final pricing may vary depending on the final approved design.</li>
+            <li>Large or complex pieces may require multiple sessions.</li>
+          </ul>
+        </div>
+
+        <div class="policy">
+          <h2>FAQ</h2>
+          <ul>
+            <li><strong>Does submitting a request guarantee an appointment?</strong><br />No. Submitting a request does not guarantee booking.</li>
+            <li><strong>Can I request changes to my idea?</strong><br />Yes, but changes may affect pricing, timing, and scheduling.</li>
+            <li><strong>Will I see the design in advance?</strong><br />Taylor’s process may vary depending on the project.</li>
+            <li><strong>What if I do not get a reply?</strong><br />Please check your spam or junk folder and make sure Taylor’s email is saved in your contacts.</li>
+          </ul>
+        </div>
+
+        <a class="button" href="index.html">Back to Main Page</a>
+      </div>
+
+      <div class="footer">
+        Taylor Helman Tattoo • Soul Fire Tattoo Studio
+      </div>
+    </div>
+  </div>
+</body>
+</html>
