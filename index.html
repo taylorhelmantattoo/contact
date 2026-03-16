@@ -206,7 +206,8 @@
         <div class="badge">Soul Fire Tattoo Studio</div>
         <h1>Add Taylor to your contacts</h1>
         <p class="sub">
-          This helps make sure appointment updates, booking replies, and important tattoo emails land in your inbox instead of spam or junk.
+          This helps ensure booking confirmations, appointment updates,
+          and tattoo emails arrive in your inbox instead of spam.
         </p>
 
         <div class="contact-box">
@@ -220,52 +221,102 @@
 
       <div class="section">
         <div class="grid">
-          <a class="btn primary" href="/contact/taylor-helman-tattoo.vcf">
+          <a class="btn primary" href="#" id="downloadVcfBtn">
             Download Contact Card
           </a>
 
-          <a class="btn" href="mailto:taylorhelmantattoo@inkde.sk?subject=Add%20Taylor%20to%20Safe%20Sender%20List&body=Please%20add%20taylorhelmantattoo%40inkde.sk%20to%20my%20contacts%20and%20safe%20sender%20list.">
+          <a
+            class="btn"
+            href="mailto:taylorhelmantattoo@inkde.sk?subject=Add%20Taylor%20to%20Safe%20Sender%20List&body=Please%20add%20taylorhelmantattoo%40inkde.sk%20to%20my%20contacts%20and%20safe%20sender%20list."
+          >
             Open Email App
           </a>
 
-          <a class="btn" href="https://contacts.google.com/" target="_blank" rel="noopener noreferrer">
+          <a
+            class="btn"
+            href="https://contacts.google.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Open Google Contacts
           </a>
 
-          <a class="btn" href="https://outlook.live.com/people/" target="_blank" rel="noopener noreferrer">
+          <a
+            class="btn"
+            href="https://outlook.live.com/people/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Open Outlook Contacts
           </a>
         </div>
 
         <p class="small-note">
-          Best option: tap <strong>Download Contact Card</strong>, then save Taylor as a contact on your phone or computer.
+          Best option: tap <strong>Download Contact Card</strong> then save Taylor as a contact.
         </p>
 
         <div class="steps">
           <div class="step">
             <strong>iPhone / Apple Mail</strong>
-            Tap <em>Download Contact Card</em>, then tap <em>Add Contact</em> and save.
+            Tap Download Contact Card, then tap Add Contact.
           </div>
+
           <div class="step">
-            <strong>Gmail / Android</strong>
-            Download the contact card and open it, or use <em>Open Google Contacts</em> to add Taylor manually.
+            <strong>Android / Gmail</strong>
+            Download the contact card and open it to save.
           </div>
+
           <div class="step">
             <strong>Outlook / Hotmail</strong>
-            Use <em>Open Outlook Contacts</em> or save the downloaded contact card to your address book.
+            Use Open Outlook Contacts or import the contact file.
           </div>
+
           <div class="step">
-            <strong>Already in spam or junk?</strong>
-            Move Taylor's email to your inbox and mark it as <em>Not Spam</em> or <em>Not Junk</em> after saving the contact.
+            <strong>Already in spam?</strong>
+            Move Taylor's email to inbox and mark it as Not Spam.
           </div>
         </div>
       </div>
 
       <div class="footer">
-        Add this email to your trusted contacts: <code>taylorhelmantattoo@inkde.sk</code><br />
-        This page cannot automatically whitelist an address inside every email provider, but saving the contact and marking messages as safe is the most reliable cross-platform solution.
+        Add this email to your trusted contacts:
+        <code>taylorhelmantattoo@inkde.sk</code><br />
+        If the button fails inside Linktree's browser,
+        <a
+          href="https://taylorhelmantattoo.github.io/contact/taylor-helman-tattoo.vcf"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          tap here for the direct contact file
+        </a>.
       </div>
     </div>
   </div>
+
+  <script>
+    document.getElementById("downloadVcfBtn").addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const vcard = `BEGIN:VCARD
+VERSION:3.0
+FN:Taylor Helman
+N:Helman;Taylor;;;
+ORG:Soul Fire Tattoo Studio
+EMAIL;TYPE=INTERNET:taylorhelmantattoo@inkde.sk
+END:VCARD`;
+
+      const blob = new Blob([vcard], { type: "text/vcard;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "taylor-helman-tattoo.vcf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+  </script>
 </body>
 </html>
