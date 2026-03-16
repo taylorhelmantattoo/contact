@@ -377,6 +377,80 @@
       }
     }
 
+    /* Instagram IAB banner */
+    .ig-banner {
+      display: none;
+      position: relative;
+      background: #1f2937;
+      color: #ffffff;
+      border-radius: var(--radius-card);
+      padding: 14px 40px 14px 16px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .ig-banner.visible {
+      display: block;
+    }
+
+    .ig-banner strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 15px;
+    }
+
+    .ig-banner-close {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    /* QR code card */
+    .qr-card {
+      margin-top: 14px;
+      padding: 18px 16px;
+      text-align: center;
+    }
+
+    .qr-card img {
+      display: block;
+      margin: 12px auto 0;
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+      width: 180px;
+      height: 180px;
+    }
+
+    .qr-card p {
+      margin: 12px 0 0;
+      font-size: 13px;
+      color: var(--text-soft);
+      line-height: 1.55;
+    }
+
+    /* Copy email button */
+    .btn-copy {
+      background: var(--surface-strong);
+      border: 1px solid var(--surface-border);
+      color: var(--text-dark);
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-copy:hover,
+    .btn-copy:focus-visible {
+      background: rgba(255,255,255,0.34);
+    }
+
     @media (max-width: 520px) {
       .name-pill {
         font-size: 22px;
@@ -401,6 +475,12 @@
 <body>
   <div class="wrap">
 
+    <div class="ig-banner" id="igBanner">
+      <button class="ig-banner-close" onclick="dismissIgBanner()" aria-label="Dismiss">&#x2715;</button>
+      <strong>You&rsquo;re browsing inside Instagram</strong>
+      <span id="igBannerMsg">To save Taylor&rsquo;s contact card, tap <strong>&hellip;</strong> at the top-right and choose <strong>&ldquo;Open in Safari&rdquo;</strong> &mdash; then tap Save Taylor&rsquo;s Email again.</span>
+    </div>
+
     <div class="hero">
       <div class="name-pill">Taylor Helman Tattoo</div>
     </div>
@@ -416,9 +496,11 @@
       <div class="cta-stack">
         <a class="btn btn-request" href="https://inkde.sk/taylorhelmantattoo/book/018f9c9c-d2b6-50dc-5765-f9b922db88c8">Start Tattoo Request</a>
         <a class="btn btn-touchup" href="https://inkde.sk/taylorhelmantattoo/book/018fa78c-7cac-733b-7204-d86cf7051d08">Book Touch-Up Evaluation</a>
-        <a class="btn btn-email" href="/taylor-helman-tattoo.vcf">Save Taylor’s Email</a>
+        <a class="btn btn-email" href="/taylor-helman-tattoo.vcf" download="taylor-helman-tattoo.vcf" onclick="saveVcf(event)">Save Taylor's Email</a>
+        <button class="btn btn-copy" id="copyEmailBtn" onclick="copyEmail()">Copy Email Address</button>
       </div>
       <div class="helper">
+        <strong>iPhone tip:</strong> Long-press &ldquo;Save Taylor&rsquo;s Email&rdquo; then dismiss the menu &mdash; the contact card will already be open behind it ready to save.<br><br>
         If you do not hear back within 48 hours, please check your spam or junk folder.
       </div>
     </div>
@@ -432,9 +514,20 @@
       </div>
 
       <div class="grid">
-        <a class="btn btn-dark" href="/taylor-helman-tattoo.vcf">Open Contact Card</a>
+        <a class="btn btn-dark" href="/taylor-helman-tattoo.vcf" download="taylor-helman-tattoo.vcf" onclick="saveVcf(event)">Open Contact Card</a>
         <a class="btn btn-dark" href="mailto:taylorhelmantattoo@inkde.sk?subject=Tattoo%20Inquiry">Open Email App</a>
       </div>
+    </div>
+
+    <div class="content-card qr-card" id="qrCard">
+      <div class="section-label">Scan to Add Contact</div>
+      <img
+        src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&ecc=M&data=BEGIN%3AVCARD%0AVERSION%3A3.0%0AFN%3ATaylor%20Helman%0AN%3AHelman%3BTaylor%3B%3B%3B%0AORG%3ASoul%20Fire%20Tattoo%20Studio%0ATITLE%3ATattoo%20Artist%0AEMAIL%3BTYPE%3DINTERNET%3Ataylorhelmantattoo%40inkde.sk%0AEND%3AVCARD"
+        alt="QR code — scan to add Taylor Helman as a contact"
+        width="180" height="180"
+        onerror="this.closest('#qrCard').style.display='none'"
+      />
+      <p>On iPhone: open your camera app (swipe down for Control Center), point it here, and tap <strong>Add to Contacts</strong> &mdash; works without leaving Instagram.</p>
     </div>
 
     <div class="info-card">
@@ -505,8 +598,97 @@
     <div class="sticky-cta-inner">
       <a class="sticky-btn request" href="https://inkde.sk/taylorhelmantattoo">Start Request</a>
       <a class="sticky-btn touchup" href="https://inkde.sk/taylorhelmantattoo/touch-up">Touch-Up</a>
-      <a class="sticky-btn email" href="/taylor-helman-tattoo.vcf">Save Email</a>
+      <a class="sticky-btn email" href="/taylor-helman-tattoo.vcf" download="taylor-helman-tattoo.vcf" onclick="saveVcf(event)">Save Email</a>
     </div>
   </div>
+  <script>
+    (function () {
+      var ua = navigator.userAgent || '';
+      var isIG = ua.indexOf('Instagram') !== -1;
+      if (!isIG) return;
+
+      var banner = document.getElementById('igBanner');
+      var msg = document.getElementById('igBannerMsg');
+      var isAndroid = /android/i.test(ua);
+
+      if (isAndroid) {
+        msg.innerHTML = 'To save Taylor&rsquo;s contact card, tap <strong>&hellip;</strong> at the top-right and choose <strong>&ldquo;Open in Chrome&rdquo;</strong> &mdash; then tap Save Taylor&rsquo;s Email again.';
+      }
+
+      banner.classList.add('visible');
+    })();
+
+    function dismissIgBanner() {
+      document.getElementById('igBanner').style.display = 'none';
+    }
+
+    function saveVcf(e) {
+      // Blob download: bypasses the IG IAB link-block on some Android WebViews.
+      // iOS WKWebView ignores this entirely and falls through to the href.
+      if (window.Blob && window.URL && window.URL.createObjectURL) {
+        try {
+          var vcf = [
+            'BEGIN:VCARD',
+            'VERSION:3.0',
+            'FN:Taylor Helman',
+            'N:Helman;Taylor;;;',
+            'ORG:Soul Fire Tattoo Studio',
+            'TITLE:Tattoo Artist',
+            'EMAIL;TYPE=INTERNET:taylorhelmantattoo@inkde.sk',
+            'END:VCARD'
+          ].join('\r\n');
+          var blob = new Blob([vcf], { type: 'text/vcard' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'taylor-helman-tattoo.vcf';
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+          e.preventDefault();
+        } catch (err) {
+          // Blob failed — let the default href fire normally.
+        }
+      }
+      // If Blob wasn't supported or threw, the href download proceeds as normal.
+    }
+
+    function copyEmail() {
+      var email = 'taylorhelmantattoo@inkde.sk';
+      var btn = document.getElementById('copyEmailBtn');
+
+      function onSuccess() {
+        btn.textContent = 'Copied!';
+        setTimeout(function () { btn.textContent = 'Copy Email Address'; }, 2500);
+      }
+
+      function onFail() {
+        btn.textContent = 'Could not copy — tap the address above';
+        setTimeout(function () { btn.textContent = 'Copy Email Address'; }, 3000);
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email).then(onSuccess, onFail);
+      } else {
+        // execCommand fallback for older WebViews
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = email;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          var ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          if (ok) { onSuccess(); } else { onFail(); }
+        } catch (e) {
+          onFail();
+        }
+      }
+    }
+  </script>
 </body>
 </html>
