@@ -413,6 +413,52 @@
       padding: 4px;
     }
 
+    /* Bio card */
+    .bio-card {
+      margin-top: 14px;
+      padding: 18px 16px;
+    }
+
+    .bio-location {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-bottom: 10px;
+    }
+
+    .bio-card p {
+      margin: 0 0 12px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-dark);
+    }
+
+    .bio-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .bio-specialties {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .bio-tag {
+      background: var(--surface-strong);
+      border: 1px solid var(--surface-border);
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
     /* QR code card */
     .qr-card {
       margin-top: 14px;
@@ -484,7 +530,17 @@
     <div class="hero">
       <div class="name-pill">Taylor Helman Tattoo</div>
     </div>
-
+    <div class="intro-card bio-card">
+      <div class="bio-location">&#x1F4CD; London, Ontario &mdash; Soul Fire Tattoo Studio</div>
+      <p>Award-winning <strong>micro realism</strong> tattoo artist with a background in henna artistry. Known for fine-line florals, pet portraits, and collectible flash designs &mdash; every piece is built with precision and intention.</p>
+      <div class="bio-specialties">
+        <span class="bio-tag">Micro Realism</span>
+        <span class="bio-tag">Fine-Line Florals</span>
+        <span class="bio-tag">Pet Portraits</span>
+        <span class="bio-tag">Flash Designs</span>
+        <span class="bio-tag">Henna Background</span>
+      </div>
+    </div>
     <div class="intro-card">
       <h1>Save Taylor’s Email</h1>
       <p>
