@@ -2,3 +2,6 @@
 gothic-point-*.json
 
 cloudflare-worker/.wrangler/
+
+# Sensitive server-side config — never commit
+smtp_config.php
