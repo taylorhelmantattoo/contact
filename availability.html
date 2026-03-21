@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#9f6d67" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="preconnect" href="https://taylorhelmantattoo-availability.taylorhelmantattoo.workers.dev" />
   <title>Availability | Taylor Helman Tattoo</title>
   <style>
     /* ── Design system — mirrors index.html exactly ─────────────────────────── */
@@ -31,8 +35,8 @@
       --max-width: 760px;
     }
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; text-size-adjust: 100%; -webkit-text-size-adjust: 100%; }
 
     body {
       margin: 0;
@@ -142,6 +146,7 @@
       line-height: 1.2;
       padding: 16px 14px;
       border-radius: var(--radius-button);
+      touch-action: manipulation;
       transition: transform 0.15s ease, background 0.15s ease;
       box-shadow: 0 3px 10px rgba(0,0,0,0.08);
     }
@@ -149,6 +154,10 @@
     .btn:hover, .btn:focus-visible {
       transform: translateY(-1px);
       outline: none;
+    }
+
+    .btn:active {
+      transform: translateY(0);
     }
 
     .btn-request { background: var(--btn-request); }
@@ -220,6 +229,7 @@
       line-height: 1.2;
       padding: 8px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.10);
+      touch-action: manipulation;
     }
 
     .sticky-btn.request   { background: var(--btn-request); color: var(--text-dark); }
@@ -282,7 +292,7 @@
     }
 
     .avail-next {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--text-soft);
       margin-bottom: 14px;
@@ -333,7 +343,7 @@
     }
 
     .day-short-date {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-soft);
       margin-top: 2px;
     }
@@ -352,7 +362,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       line-height: 1.2;
     }
@@ -393,7 +403,7 @@
     /* ── Disclaimer card ─────────────────────────────────────────────────────── */
     .disclaimer-card p {
       margin: 0;
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-soft);
       line-height: 1.75;
     }
@@ -433,6 +443,67 @@
     }
 
     .skel-day-row:last-child { border-bottom: none; }
+
+    /* ── Next Opening card ───────────────────────────────────────────────────── */
+    #next-opening-container {
+      margin-top: 14px;
+    }
+
+    .next-opening-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-card);
+      padding: 22px 18px;
+      text-align: center;
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .next-opening-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .next-opening-date {
+      font-size: 1.25rem;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .next-opening-subtext {
+      font-size: 14px;
+      color: var(--text-soft);
+      margin-bottom: 14px;
+    }
+
+    .next-opening-button {
+      display: block;
+      width: 100%;
+      background: var(--btn-request);
+      color: var(--text-dark);
+      border: none;
+      border-radius: var(--radius-button);
+      padding: 16px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s ease, background 0.15s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+
+    .next-opening-button:hover,
+    .next-opening-button:focus-visible {
+      transform: translateY(-1px);
+      background: var(--btn-request-hover);
+      outline: none;
+    }
 
     /* ── Responsive ──────────────────────────────────────────────────────────── */
     @media (min-width: 768px) {
@@ -522,8 +593,11 @@
     </div>
     <!-- /status banner -->
 
-    <!-- ── Week availability cards ──────────────────────────────────────────── -->
-    <div id="weeksRegion">
+    <!-- ── Next Opening (single visible slot) ──────────────────────────────── -->
+    <div id="next-opening-container"></div>
+
+    <!-- ── Week availability cards (hidden — full date grid suppressed) ─────── -->
+    <div id="weeksRegion" style="display:none;">
 
       <!-- Skeleton (two weeks) -->
       <div id="weeksSkeleton">
@@ -630,6 +704,55 @@
         .replace(/"/g, '&quot;');
     }
 
+    // ── Next Opening helpers ──────────────────────────────────────────────────
+
+    var BOOKABLE = ['available', 'limited', 'flash-day'];
+
+    function getNextOpening(data) {
+      if (!data || !data.weeks) return null;
+      for (var w = 0; w < data.weeks.length; w++) {
+        var days = data.weeks[w].days;
+        if (!days) continue;
+        for (var d = 0; d < days.length; d++) {
+          if (BOOKABLE.indexOf(days[d].status) !== -1) return days[d];
+        }
+      }
+      return null;
+    }
+
+    function renderNextOpeningCard(data) {
+      var container = document.getElementById('next-opening-container');
+      if (!container) return;
+
+      var BOOKING_URL = 'https://inkde.sk/taylorhelmantattoo/book/018f9c9c-d2b6-50dc-5765-f9b922db88c8';
+      var nextDay = getNextOpening(data);
+
+      if (!nextDay) {
+        container.innerHTML =
+          '<div class="next-opening-card">'
+          + '<div class="next-opening-label">Next Opening</div>'
+          + '<div class="next-opening-date">No openings currently available</div>'
+          + '<div class="next-opening-subtext">Join the waitlist to be notified first.</div>'
+          + '<a class="next-opening-button" href="' + BOOKING_URL + '">Join Waitlist</a>'
+          + '</div>';
+        return;
+      }
+
+      var subtextHtml;
+      if (nextDay.windows && nextDay.windows.length) {
+        subtextHtml = esc(nextDay.windows.join(' \u00b7 '));
+      } else {
+        subtextHtml = 'Limited availability';
+      }
+
+      container.innerHTML =
+        '<div class="next-opening-card">'
+        + '<div class="next-opening-label">Next Opening</div>'
+        + '<div class="next-opening-date">' + esc(nextDay.dayName) + '\u2002' + esc(nextDay.shortDate) + '</div>'
+        + '<div class="next-opening-subtext">' + subtextHtml + '</div>'
+        + '</div>';
+    }
+
     // ── Render helpers ────────────────────────────────────────────────────────
 
     function renderWindowTags(windows) {
@@ -704,26 +827,13 @@
       document.getElementById('statusText').textContent = sc.text;
       document.getElementById('statusLabelEl').textContent = data.statusLabel || '';
 
-      var nextEl = document.getElementById('statusNext');
-      if (data.nextAvailableLabel && data.status !== 'closed') {
-        nextEl.textContent = 'Next opening: ' + data.nextAvailableLabel;
-        nextEl.style.display = 'block';
-      } else {
-        nextEl.style.display = 'none';
-      }
+      // Next Opening card handles date display — suppress the redundant status-banner line
+      document.getElementById('statusNext').style.display = 'none';
 
       document.getElementById('stateLoaded').style.display = 'block';
 
-      // Week cards
-      var liveEl = document.getElementById('weeksLive');
-      if (data.weeks && data.weeks.length > 0) {
-        liveEl.innerHTML = data.weeks.map(renderWeekCard).join('');
-      } else {
-        liveEl.innerHTML = '<div class="content-card" style="margin-top:14px; padding:18px 16px; '
-          + 'text-align:center; color:var(--text-soft); font-size:14px;">'
-          + 'No upcoming openings in the next 60 days. Submit a request to be added to the waitlist.'
-          + '</div>';
-      }
+      // Render the single Next Opening card; week grid remains hidden
+      renderNextOpeningCard(data);
 
       showDisclaimer(data.disclaimer);
       showFooter();

@@ -6,3 +6,6 @@ cloudflare-worker/.wrangler/
 Backup-codes-taylorhelmantattoo.txt
 
 StabPad/
+
+# Sensitive server-side config -- never commit
+smtp_config.php
