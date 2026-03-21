@@ -30,14 +30,22 @@ if(!isset($redirect_url))
 // Only active when $settings['two_step'] is true (set in configs/tattoo.php)
 if (!empty($settings['two_step']) && !isset($_GET['print']) && !isset($_GET['topdf'])) {
 
-    // Redirect bare root hits to the artist step (two-step flow has replaced the raw form)
-    $has_step   = isset($_GET['step']);
-    $has_client = isset($_GET['client']);
-    $is_ajax    = isset($_GET['get_artist_sig']) || isset($_GET['has_artist_pin']) ||
-                  isset($_GET['set_artist_pin']) || isset($_GET['reset_artist_pin']);
-    if (!$has_step && !$has_client && !$is_ajax) {
-        $release = preg_replace('/[^a-z0-9_\-]/', '', $_GET['release'] ?? 'tattoo');
-        header('Location: ?step=artist&release=' . $release, true, 302);
+    // -- Route detection: CLIENT_ONLY_MODE is the public entry point. -----------
+    // Set by ?mode=client. No token required. Distinct from TWO_STEP_CLIENT.
+    // Artist-only HTML must not be rendered when this is defined.
+    if (isset($_GET['mode']) && $_GET['mode'] === 'client') {
+        define('CLIENT_ONLY_MODE', true);
+    }
+
+    // Narrow bare-root fallback: redirect unrouted hits to public client mode.
+    // Only fires when truly no routing params are present.
+    if (!defined('CLIENT_ONLY_MODE') &&
+        !isset($_GET['step']) && !isset($_GET['client']) && !isset($_GET['mode']) &&
+        !isset($_GET['get_artist_sig']) && !isset($_GET['has_artist_pin']) &&
+        !isset($_GET['set_artist_pin']) && !isset($_GET['reset_artist_pin']) &&
+        empty($_POST['artist_step_submit'])) {
+        $_rel = preg_replace('/[^a-z0-9_\-]/', '', $_GET['release'] ?? 'tattoo');
+        header('Location: ?mode=client&release=' . $_rel, true, 302);
         exit;
     }
 
@@ -722,6 +730,11 @@ if($settings['play_sound'] && $settings['play_sound'] !== 'none') {
 	
 // artist
 if(is_array($settings['artists']) && count($settings['artists'])>0) {
+	// CLIENT_ONLY_MODE: artist section is not rendered; submit a blank hidden field so
+	// downstream code does not get an undefined index notice.
+	if (defined('CLIENT_ONLY_MODE')) {
+		$artist_input = '<input type="hidden" name="artist" value="" /><div class="break"></div>';
+	} else {
 	$artist_input='<div class="label" id="input_artist">Artist:<span class="required">*</span></div>';
 	// Two-step client view - show locked read-only artist name
 	if (defined('TWO_STEP_CLIENT')) {
@@ -748,10 +761,12 @@ if(is_array($settings['artists']) && count($settings['artists'])>0) {
 		}
 	}
 	$artist_input.='</div><div class="break"></div>';
+	} // end !CLIENT_ONLY_MODE
 }
 
-// top header
-?><fieldset id="top"<?php if (defined('TWO_STEP_CLIENT')) echo ' style="display:none;"'; ?>>
+// top header — artist-only section. Not rendered in CLIENT_ONLY_MODE.
+<?php if (!defined('CLIENT_ONLY_MODE')): ?>
+<fieldset id="top"<?php if (defined('TWO_STEP_CLIENT')) echo ' style="display:none;"'; ?>>
 	<div class="legend">Let us do this part:</div>
 <?php
 
@@ -811,7 +826,8 @@ if(count($settings['fields'])>0) {
 	}
 }
 
-if($settings['artist_signature']) {
+// Artist signature — not rendered in CLIENT_ONLY_MODE (no artist section for public clients)
+if($settings['artist_signature'] && !defined('CLIENT_ONLY_MODE')) {
 	if (defined('TWO_STEP_CLIENT')) {
 		// Show locked read-only artist signature from token
 		?><div id="input_artist_signature" class="label">Artist Signature:</div>
@@ -846,6 +862,7 @@ if($settings['artist_lock'] && !defined('TWO_STEP_CLIENT')) {
 
 ?>
 </fieldset>
+<?php endif; // !CLIENT_ONLY_MODE ?>
 <?php
 
 // header

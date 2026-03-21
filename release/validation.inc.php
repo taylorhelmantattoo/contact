@@ -61,15 +61,16 @@ if($_REQUEST['test']) {
 	$first_error=null;
 	$errors=array();
 
-	// artist
-	if(is_array($settings['artists']) && count($settings['artists'])>0 && (!$_REQUEST["artist"] || $_REQUEST["artist"] == "-1")) {
+	// artist (skip in CLIENT_ONLY_MODE — artist section not rendered for public clients)
+	if(is_array($settings['artists']) && count($settings['artists'])>0 && (!$_REQUEST["artist"] || $_REQUEST["artist"] == "-1")
+	   && (!isset($_GET['mode']) || $_GET['mode'] !== 'client')) {
 		array_push($errors, 'Select your <b>artist</b>');
 		if(!$first_error) $first_error = 'artist';
 	}
 
-	// fields
+	// fields (skip in CLIENT_ONLY_MODE — placement/artist fields not rendered for public clients)
 	$count=0;
-	if($settings['fields']) {
+	if($settings['fields'] && (!isset($_GET['mode']) || $_GET['mode'] !== 'client')) {
 		foreach($settings['fields'] as $field) {
 			$required=false;
 			if(is_array($field)) {
@@ -180,8 +181,8 @@ if($_REQUEST['test']) {
 		if(!$first_error) $first_error = 'signature';
 	}
 
-	// artist signature
-	if($settings['artist_signature'])
+	// artist signature (skip in CLIENT_ONLY_MODE — artist section not rendered for public clients)
+	if($settings['artist_signature'] && (!isset($_GET['mode']) || $_GET['mode'] !== 'client'))
 		if(!$_REQUEST['signature_artist_status']) {
 			array_push($errors, 'Please get your <b>artist</b> to sign their <b>signature field</b>');
 			if(!$first_error) $first_error = 'artist_signature';
