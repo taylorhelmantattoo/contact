@@ -74,3 +74,19 @@ fieldset {
 #camera_container {
 	display: none !important;
 }
+
+/* Typed signature block in PDF/print */
+.typed-sig-display {
+	margin-left: 60px;
+	display: block;
+	border: 1px solid #000;
+	background: #fff;
+	width: 400px;
+	min-height: 44px;
+	font-size: 1.4em;
+	font-style: italic;
+	font-family: Georgia, "Times New Roman", serif;
+	color: #1a1a8c;
+	padding: 8px 12px;
+	box-sizing: border-box;
+}

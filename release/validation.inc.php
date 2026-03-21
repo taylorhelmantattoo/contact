@@ -175,10 +175,14 @@ if($_REQUEST['test']) {
 		}  
 	}	
 
-	// client signature
-	if(!$_REQUEST['signature_client_status']) {
-		array_push($errors, 'Sign in the <b>signature field</b>');
+	// client typed e-signature + consent checkbox
+	if (!trim($_REQUEST['signature_client_typed'] ?? '')) {
+		array_push($errors, 'Please type your name in the <b>signature field</b>');
 		if(!$first_error) $first_error = 'signature';
+	}
+	if (!isset($_REQUEST['esign_consent']) || !$_REQUEST['esign_consent']) {
+		array_push($errors, 'You must check the <b>electronic signature consent</b> box');
+		if(!$first_error) $first_error = 'esign_consent';
 	}
 
 	// artist signature (skip in CLIENT_ONLY_MODE — artist section not rendered for public clients)

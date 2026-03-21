@@ -1069,32 +1069,46 @@ I hereby declare that I am of legal age (with valid proof of age) and am compete
 			<div class="break"></div>
 
 			<div id="input_signature" class="label"><?=display_label('signature')?><span class="required">*</span></div>
-			<br />
-			<?php if(!$submit){?>
-			<span class="clear_signature_container"><input class="clear_signature" type="button" value="Clear" onclick="clearCanvas('signature_client')" /></span>
-		<?php }?>
-				<?php if(!$submit){
-					if($skin=="print")
-						echo '<div class="fake_signature"></div>';
-					else {
-
-?>
-					<input type="hidden" name="signature_client_data" id="signature_client_data" />
-					<input type="hidden" name="signature_client_status" id="signature_client_status" value="" />
-					<canvas class="signature" id="signature_client" name="signature_client"></canvas>
-					<?php }
-				} else {
-					?><img src="<?=$_POST['signature_client_data']?>"><?php
-				}?>
-		<div class="break"></div>
-		<div class="label">Sign or type signature:</div>
-		<div class="value">
-			<?php if(!$submit){?>
-                  <input type="text" name="signature_client_text" id="signature_client_text" oninput="if(typeof typeToCanvas==='function') typeToCanvas(this.value, 'signature_client')" />
+			<?php if($skin === 'print') { ?>
+				<div class="typed-sig-display"><?=htmlspecialchars($_POST['signature_client_typed'] ?? '')?></div>
+			<?php } elseif($submit) { ?>
+				<div class="typed-sig-display"><?=htmlspecialchars($_POST['signature_client_typed'] ?? '')?></div>
 			<?php } else { ?>
-			<div class="fake_input"><?=htmlspecialchars($_POST['signature_client_text'] ?? '')?></div>
+				<input type="text" name="signature_client_typed" id="signature_client_typed"
+					class="typed-sig-input" placeholder="Type your full legal name"
+					autocomplete="off" oninput="updateClientSigStatus()" />
 			<?php } ?>
-		</div>
+			<div class="break"></div>
+
+			<?php if($skin !== 'print' && !$submit) { ?>
+			<div class="no_label" id="input_esign_consent" style="clear:both;padding-top:4px;">
+				<input type="checkbox" id="esign_consent" name="esign_consent" value="1" onchange="updateClientSigStatus()" />
+				<span style="position:relative;bottom:6px;margin-left:6px;font-size:0.9em;">I agree to sign this document electronically. I understand this constitutes a legally binding signature.</span>
+			</div>
+			<?php } elseif($submit) { ?>
+			<div class="no_label" style="clear:both;padding-top:4px;">
+				<img src="img/checked_box.png" /> <span style="position:relative;bottom:8px;font-size:0.9em;">Electronically signed</span>
+			</div>
+			<?php } elseif($skin === 'print') { ?>
+			<div style="clear:both;padding-top:4px;padding-left:115px;">
+				<div class="fake_checkbox" style="float:left;margin-right:8px;"></div>
+				<span style="position:relative;bottom:5px;font-size:0.9em;">Electronic signature consent given</span>
+			</div>
+			<?php } ?>
+
+			<input type="hidden" name="signature_client_status" id="signature_client_status" value="" />
+			<?php if(!$submit && $skin !== 'print') { ?>
+			<script>
+			function updateClientSigStatus() {
+				var typed  = document.getElementById('signature_client_typed');
+				var consent = document.getElementById('esign_consent');
+				var status  = document.getElementById('signature_client_status');
+				if (typed && consent && status) {
+					status.value = (typed.value.trim() !== '' && consent.checked) ? 'yes' : '';
+				}
+			}
+			</script>
+			<?php } ?>
 		<div class="break"></div>
 	</fieldset>
 

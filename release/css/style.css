@@ -57,30 +57,7 @@ img { border-style: none; }
 
 a:active { border-style: none; }
 
-/* photo mode toggle */
-.photo-helper-text { font-size: 1.1em; margin: 6px 0 10px 0; }
-.photo-mode-buttons { margin-bottom: 10px; }
-.photo-mode-btn {
-	display: inline-block;
-	padding: 8px 18px;
-	margin-right: 8px;
-	border: 1px solid #65a3b9;
-	border-radius: 4px;
-	background: #fff;
-	color: #333;
-	font-size: 1em;
-	cursor: pointer;
-}
-.photo-mode-btn.photo-mode-active {
-	background: #65a3b9;
-	color: #fff;
-	border-color: #4a8299;
-}
-
-/* snapbutton (legacy - kept for override) */
-.snapbutton {
-	display: none;
-}
+/* Photo Identification section CSS moved to end of file */
 
 .provision_break { margin-bottom: 10px; }
 
@@ -291,153 +268,47 @@ input[type=text],
 input[type=email],
 input[type=tel] { width: 460px; }
 
+/* Typed signature field — matches artist canvas border/background style */
+.typed-sig-input {
+	margin-left: 60px;
+	display: block;
+	border: 1px solid #65a3b9;
+	border-bottom: 1px solid #97c4d3;
+	background: #fff;
+	width: 400px;
+	height: 48px;
+	font-size: 1.4em;
+	font-style: italic;
+	font-family: Georgia, "Times New Roman", serif;
+	color: #1a1a8c;
+	padding: 8px 12px;
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+.typed-sig-display {
+	margin-left: 60px;
+	display: inline-block;
+	border: 1px solid #65a3b9;
+	border-bottom: 1px solid #97c4d3;
+	border-radius: 4px;
+	background: #fff;
+	width: 400px;
+	min-height: 48px;
+	font-size: 1.4em;
+	font-style: italic;
+	font-family: Georgia, "Times New Roman", serif;
+	color: #1a1a8c;
+	padding: 8px 12px;
+	box-sizing: border-box;
+}
+
 .bigbox { position: relative; bottom: 6px; }
 
 h1 { color: #fff; font-weight: bold; }
 hr { clear: both; display: block; border: none; height: 1px; }
 
-/* ── Upload panel ─────────────────────────────────────────────── */
-#uploadcontainer { margin-bottom: 8px; }
-
-#os_photo {
-	position: absolute;
-	left: -9999px;
-	width: 1px;
-	height: 1px;
-	opacity: 0;
-}
-
-/* Drop-zone box — styled like the signature box */
-.photo-drop-zone {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	margin: 4px 0 8px 0;
-	border: 1px solid #65a3b9;
-	border-bottom: 1px solid #97c4d3;
-	border-radius: 8px;
-	background: #f7fbfd;
-	width: 460px;
-	min-height: 120px;
-	cursor: pointer;
-	padding: 18px 10px;
-	box-sizing: border-box;
-	transition: background 0.2s;
-}
-.photo-drop-zone:hover { background: #eaf4f9; }
-.photo-drop-icon { font-size: 2.4em; color: #65a3b9; margin-bottom: 6px; }
-.photo-drop-label { font-size: 1.1em; font-weight: bold; color: #333; margin-bottom: 4px; }
-.photo-drop-hint { font-size: 0.85em; color: #666; }
-
-/* Preview area */
-#photo-preview-area { margin: 6px 0; }
-#photo-preview-img {
-	max-width: 460px;
-	max-height: 300px;
-	display: block;
-	border: 1px solid #65a3b9;
-	border-radius: 8px;
-	margin-bottom: 6px;
-}
-.photo-preview-actions {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	margin-top: 4px;
-}
-.photo-file-info { font-size: 0.85em; color: #555; }
-.photo-remove-btn {
-	padding: 5px 12px;
-	border: 1px solid #c00;
-	border-radius: 4px;
-	background: #fff;
-	color: #c00;
-	font-size: 0.9em;
-	cursor: pointer;
-}
-.photo-remove-btn:hover { background: #fff0f0; }
-
-/* Error message */
-.photo-error {
-	color: #c00;
-	font-size: 0.95em;
-	padding: 6px 10px;
-	background: #fff0f0;
-	border-radius: 4px;
-	margin-top: 6px;
-}
-
-/* ── Camera panel ──────────────────────────────────────────────── */
-.camera-instruction {
-	font-size: 1em;
-	font-weight: bold;
-	margin: 0 0 8px 0;
-}
-.camera-viewport {
-	position: relative;
-	display: inline-block;
-	margin-bottom: 8px;
-}
-.photo {
-	border: 1px solid #000;
-	background: #ccc;
-	width: 460px;
-	height: 345px;
-	border-radius: 8px;
-	margin-bottom: 5px;
-}
-#photo, #monitor { display: none; }
-
-/* ID guide overlay */
-.camera-id-overlay {
-	position: absolute;
-	top: 12%;
-	left: 8%;
-	width: 84%;
-	height: 76%;
-	border: 3px dashed rgba(255,255,255,0.85);
-	border-radius: 6px;
-	pointer-events: none;
-}
-
-/* Capture controls */
-#snapbutton-area, #retake-btn-area { margin: 6px 0; }
-.photo-capture-btn {
-	padding: 10px 28px;
-	background: #65a3b9;
-	color: #fff;
-	border: none;
-	border-radius: 4px;
-	font-size: 1em;
-	cursor: pointer;
-}
-.photo-capture-btn:hover { background: #4a8299; }
-.photo-retake-btn {
-	padding: 8px 20px;
-	background: #fff;
-	color: #333;
-	border: 1px solid #888;
-	border-radius: 4px;
-	font-size: 0.95em;
-	cursor: pointer;
-}
-.photo-retake-btn:hover { background: #f0f0f0; }
-#snapbutton { display: none; }
-
-/* ── Validation checklist ─────────────────────────────────────── */
-#photo-checklist { margin: 10px 0 4px 0; }
-.id-checklist {
-	list-style: none;
-	margin: 0;
-	padding: 6px 12px;
-	border: 1px solid #b8dfb8;
-	border-radius: 6px;
-	background: #f0fbf0;
-	display: inline-block;
-}
-.id-checklist li { margin: 3px 0; font-size: 0.95em; }
-.chk-ok { color: #276027; font-weight: bold; margin-right: 4px; }
+/* Photo Identification panel CSS moved to end of file */
 
 @media screen and (-webkit-min-device-pixel-ratio:0) {
 .NFCheck {}
@@ -446,5 +317,428 @@ hr { clear: both; display: block; border: none; height: 1px; }
 	margin-top: -15px;
     }  
     .bigbox { bottom: 10px; }
+}
+
+/* =========================================
+   PHOTO IDENTIFICATION SECTION
+   Scoped styling for upload / camera panel
+   ========================================= */
+
+#camera_container {
+  margin: 24px 0;
+  padding: 22px;
+  border: 1px solid #d9d9d9;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+#camera_container .legend,
+#input_photo {
+  display: block;
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111111;
+  letter-spacing: 0.01em;
+}
+
+.photo-helper-text {
+  margin: 0 0 16px 0;
+  font-size: 0.96rem;
+  line-height: 1.5;
+  color: #444444;
+}
+
+.photo-helper-text strong {
+  color: #111111;
+  font-weight: 700;
+}
+
+.photo-mode-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 18px 0;
+}
+
+.photo-mode-btn {
+  appearance: none;
+  border: 1px solid #cfcfcf;
+  background: #f7f7f7;
+  color: #222222;
+  border-radius: 999px;
+  padding: 11px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.12s ease;
+  box-sizing: border-box;
+}
+
+.photo-mode-btn:hover {
+  background: #efefef;
+  border-color: #bdbdbd;
+}
+
+.photo-mode-btn:active {
+  transform: translateY(1px);
+}
+
+.photo-mode-btn:focus-visible {
+  outline: none;
+  border-color: #111111;
+  box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.12);
+}
+
+.photo-mode-btn.photo-mode-active {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+  box-shadow: 0 6px 18px rgba(17, 17, 17, 0.18);
+}
+
+#uploadcontainer,
+#cameracontainer {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.photo-drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 190px;
+  width: 100%;
+  padding: 24px 18px;
+  border: 2px dashed #cfcfcf;
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(250, 250, 250, 1) 0%, rgba(244, 244, 244, 1) 100%);
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.12s ease;
+}
+
+.photo-drop-zone:hover {
+  border-color: #9f9f9f;
+  background: #f7f7f7;
+}
+
+.photo-drop-zone:active {
+  transform: translateY(1px);
+}
+
+.photo-drop-zone:focus-within {
+  border-color: #111111;
+  box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.08);
+}
+
+.photo-drop-icon {
+  display: none;
+}
+
+.photo-drop-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111111;
+}
+
+.photo-drop-hint {
+  display: block;
+  font-size: 0.9rem;
+  color: #666666;
+  line-height: 1.4;
+}
+
+#os_photo {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#photo-preview-area {
+  margin-top: 16px;
+  border: 1px solid #dddddd;
+  border-radius: 16px;
+  background: #fafafa;
+  padding: 14px;
+  box-sizing: border-box;
+}
+
+#photo-preview-img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  margin: 0 auto;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e7e7e7;
+}
+
+.photo-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.photo-file-info {
+  font-size: 0.9rem;
+  color: #555555;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.photo-remove-btn,
+.photo-capture-btn,
+.photo-retake-btn {
+  appearance: none;
+  border: 1px solid #111111;
+  background: #111111;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-size: 0.93rem;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.12s ease;
+  box-sizing: border-box;
+}
+
+.photo-remove-btn:hover,
+.photo-capture-btn:hover,
+.photo-retake-btn:hover {
+  background: #222222;
+  border-color: #222222;
+}
+
+.photo-remove-btn:active,
+.photo-capture-btn:active,
+.photo-retake-btn:active {
+  transform: translateY(1px);
+}
+
+.photo-remove-btn:focus-visible,
+.photo-capture-btn:focus-visible,
+.photo-retake-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.14);
+}
+
+.photo-remove-btn {
+  background: #ffffff;
+  color: #111111;
+}
+
+.photo-remove-btn:hover {
+  background: #f4f4f4;
+  color: #111111;
+}
+
+.camera-instruction {
+  margin: 0 0 12px 0;
+  font-size: 0.94rem;
+  line-height: 1.5;
+  color: #4a4a4a;
+}
+
+.camera-viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid #dcdcdc;
+  background:
+    linear-gradient(180deg, rgba(38, 38, 38, 1) 0%, rgba(20, 20, 20, 1) 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  box-sizing: border-box;
+}
+
+#monitor,
+#photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 240px;
+  max-height: 70vh;
+  background: transparent;
+  object-fit: cover;
+  border-radius: 18px;
+}
+
+.camera-id-overlay {
+  position: absolute;
+  inset: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.78);
+  border-radius: 14px;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 9999px rgba(0, 0, 0, 0.14),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+#snapbutton-area,
+#retake-btn-area {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.photo-capture-btn,
+.photo-retake-btn {
+  min-width: 180px;
+}
+
+#photo-checklist {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #f8f8f8;
+  border: 1px solid #e6e6e6;
+}
+
+.id-checklist {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.id-checklist li {
+  margin: 8px 0;
+  color: #333333;
+  font-size: 0.93rem;
+  line-height: 1.45;
+}
+
+.chk-ok {
+  color: #1c7c37;
+  font-weight: 700;
+}
+
+.photo-error {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e7b7b7;
+  background: #fff3f3;
+  color: #9f1f1f;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+#camera_container button[disabled],
+#camera_container input[disabled] + .photo-drop-zone {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+#camera_container *,
+#camera_container *::before,
+#camera_container *::after {
+  box-sizing: border-box;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #camera_container {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .photo-mode-buttons {
+    flex-direction: column;
+  }
+
+  .photo-mode-btn,
+  .photo-remove-btn,
+  .photo-capture-btn,
+  .photo-retake-btn {
+    width: 100%;
+  }
+
+  .photo-drop-zone {
+    min-height: 160px;
+    padding: 20px 14px;
+  }
+
+  #monitor,
+  #photo {
+    min-height: 220px;
+  }
+
+  .photo-preview-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .photo-file-info {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  #camera_container .legend,
+  #input_photo {
+    font-size: 1rem;
+  }
+
+  .photo-helper-text,
+  .camera-instruction,
+  .id-checklist li,
+  .photo-file-info,
+  .photo-drop-hint,
+  .photo-error {
+    font-size: 0.9rem;
+  }
+
+  .photo-drop-label {
+    font-size: 0.96rem;
+  }
+
+  .photo-mode-btn,
+  .photo-remove-btn,
+  .photo-capture-btn,
+  .photo-retake-btn {
+    padding: 12px 14px;
+    font-size: 0.92rem;
+  }
+}
+
+/* Optional reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .photo-mode-btn,
+  .photo-drop-zone,
+  .photo-remove-btn,
+  .photo-capture-btn,
+  .photo-retake-btn {
+    transition: none;
+  }
 }
 
