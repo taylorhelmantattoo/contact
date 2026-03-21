@@ -765,8 +765,7 @@ if(is_array($settings['artists']) && count($settings['artists'])>0) {
 }
 
 // top header — artist-only section. Not rendered in CLIENT_ONLY_MODE.
-<?php if (!defined('CLIENT_ONLY_MODE')): ?>
-<fieldset id="top"<?php if (defined('TWO_STEP_CLIENT')) echo ' style="display:none;"'; ?>>
+if (!defined('CLIENT_ONLY_MODE')): ?><fieldset id="top"<?php if (defined('TWO_STEP_CLIENT')) echo ' style="display:none;"'; ?>>
 	<div class="legend">Let us do this part:</div>
 <?php
 
