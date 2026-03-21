@@ -151,7 +151,8 @@ function curDate() {
 }
 
 function insertDate() {
-	document.getElementById('date_data').value = curDate();
+	var el = document.getElementById('date_data');
+	if (el) el.value = curDate();
 }
 
 function age(agelimit){
