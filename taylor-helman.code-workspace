@@ -1,0 +1,26 @@
+﻿{
+  "folders": [
+    {
+      "name": "Site (GitHub Pages)",
+      "path": "."
+    },
+    {
+      "name": "Release Form (PHP)",
+      "path": "../release"
+    }
+  ],
+  "settings": {
+    "liveServer.settings.port": 5500,
+    "liveServer.settings.root": "/",
+    "liveServer.settings.CustomBrowser": "chrome",
+    "editor.formatOnSave": false,
+    "editor.tabSize": 2
+  },
+  "extensions": {
+    "recommendations": [
+      "ritwickdey.LiveServer",
+      "ecmel.vscode-html-css",
+      "ext-lab.ftp-supports"
+    ]
+  }
+}

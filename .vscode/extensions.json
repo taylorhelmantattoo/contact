@@ -1,5 +1,7 @@
-{
+﻿{
     "recommendations": [
-        "ext-lab.ftp-supports"
+        "ext-lab.ftp-supports",
+        "ritwickdey.LiveServer",
+        "ecmel.vscode-html-css"
     ]
 }
