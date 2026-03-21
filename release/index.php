@@ -36,7 +36,7 @@ if (!empty($settings['two_step']) && !isset($_GET['print']) && !isset($_GET['top
         header('Content-Type: application/json');
         $req_artist = trim($_POST['artist'] ?? '');
         $req_pin    = trim($_POST['pin'] ?? '');
-        if ($req_artist && check_artist_pin($req_pin)) {
+        if ($req_artist && verify_artist_pin($req_artist, $req_pin)) {
             $sig = get_artist_sig($req_artist);
             echo json_encode(['ok' => true, 'sig' => $sig]);
         } else {
@@ -45,11 +45,67 @@ if (!empty($settings['two_step']) && !isset($_GET['print']) && !isset($_GET['top
         die;
     }
 
+    // -- has_artist_pin AJAX endpoint --
+    if (isset($_GET['has_artist_pin'])) {
+        header('Content-Type: application/json');
+        $req_artist = trim($_POST['artist'] ?? '');
+        echo json_encode(['has_pin' => ($req_artist ? has_artist_pin($req_artist) : false)]);
+        die;
+    }
+
+    // -- set_artist_pin AJAX endpoint (first-time, no auth) --
+    if (isset($_GET['set_artist_pin'])) {
+        header('Content-Type: application/json');
+        $req_artist  = trim($_POST['artist']      ?? '');
+        $new_pin     = trim($_POST['new_pin']      ?? '');
+        $confirm_pin = trim($_POST['confirm_pin']  ?? '');
+        if (!$req_artist) {
+            echo json_encode(['ok' => false, 'error' => 'Artist is required.']); die;
+        }
+        if (has_artist_pin($req_artist)) {
+            echo json_encode(['ok' => false, 'error' => 'PIN already exists. Use the reset flow.']); die;
+        }
+        if (!preg_match('/^[0-9]{4,8}$/', $new_pin)) {
+            echo json_encode(['ok' => false, 'error' => 'PIN must be 4-8 digits only.']); die;
+        }
+        if ($new_pin !== $confirm_pin) {
+            echo json_encode(['ok' => false, 'error' => 'PINs do not match.']); die;
+        }
+        save_artist_pin($req_artist, $new_pin);
+        echo json_encode(['ok' => true]);
+        die;
+    }
+
+    // -- reset_artist_pin AJAX endpoint (admin PIN required) --
+    if (isset($_GET['reset_artist_pin'])) {
+        header('Content-Type: application/json');
+        require_once __DIR__ . '/smtp_config.php';
+        $req_artist  = trim($_POST['artist']      ?? '');
+        $admin_pin   = trim($_POST['admin_pin']    ?? '');
+        $new_pin     = trim($_POST['new_pin']      ?? '');
+        $confirm_pin = trim($_POST['confirm_pin']  ?? '');
+        if (!$req_artist) {
+            echo json_encode(['ok' => false, 'error' => 'Artist is required.']); die;
+        }
+        if (!hash_equals(ARTIST_PIN, $admin_pin)) {
+            echo json_encode(['ok' => false, 'error' => 'Incorrect admin PIN.']); die;
+        }
+        if (!preg_match('/^[0-9]{4,8}$/', $new_pin)) {
+            echo json_encode(['ok' => false, 'error' => 'New PIN must be 4-8 digits only.']); die;
+        }
+        if ($new_pin !== $confirm_pin) {
+            echo json_encode(['ok' => false, 'error' => 'New PINs do not match.']); die;
+        }
+        save_artist_pin($req_artist, $new_pin);
+        echo json_encode(['ok' => true]);
+        die;
+    }
+
     if (isset($_POST['artist_step_submit'])) {
-        if (!check_artist_pin($_POST['artist_pin'] ?? '')) {
-            $pin_error = 'Incorrect PIN. Please try again.';
+        $tok_artist = trim($_POST['tok_artist'] ?? '');
+        if (!$tok_artist || !verify_artist_pin($tok_artist, $_POST['artist_pin'] ?? '')) {
+            $pin_error = !$tok_artist ? 'Please select an artist.' : 'Incorrect PIN. Please try again.';
         } else {
-            $tok_artist    = trim($_POST['tok_artist'] ?? '');
             $tok_placement = trim($_POST['tok_placement'] ?? '');
             $tok_sig       = trim($_POST['tok_sig_data'] ?? '');
             $tok_cemail    = trim($_POST['tok_client_email'] ?? '');
@@ -203,11 +259,6 @@ canvas.signature{display:block}
     <?php if ($pin_error) echo '<div class="error">'.htmlspecialchars($pin_error).'</div>'; ?>
     <form method="post" action="?step=artist&release=<?=htmlspecialchars($_GET['release'] ?? 'tattoo')?>">
 
-      <div class="pin-section">
-        <label for="artist_pin">Artist PIN:</label>
-        <input type="password" name="artist_pin" id="artist_pin" autocomplete="off" required style="max-width:200px" />
-      </div>
-
       <label for="tok_artist">Artist:</label>
       <select name="tok_artist" id="tok_artist" required>
         <option value="">-- Select --</option>
@@ -217,6 +268,47 @@ canvas.signature{display:block}
         } ?>
       </select>
 
+      <!-- PIN section — hidden until artist is selected -->
+      <div id="pin-section" style="display:none">
+
+        <!-- State A: no PIN on file -->
+        <div id="pin-state-a" style="display:none">
+          <label style="font-size:15px;font-weight:bold;margin-top:16px;display:block">Create your PIN:</label>
+          <div style="margin:8px 0 4px">
+            <label for="new-pin-a">New PIN (4&ndash;8 digits):</label>
+            <input type="password" id="new-pin-a" inputmode="numeric" maxlength="8" autocomplete="new-password" style="max-width:200px" />
+          </div>
+          <div style="margin:4px 0 4px">
+            <label for="confirm-pin-a">Confirm PIN:</label>
+            <input type="password" id="confirm-pin-a" inputmode="numeric" maxlength="8" autocomplete="new-password" style="max-width:200px" />
+          </div>
+          <div id="pin-a-error" style="color:#c00;font-size:13px;min-height:18px"></div>
+          <button type="button" id="set-pin-btn" class="btn" style="margin-top:8px">Set PIN</button>
+        </div>
+
+        <!-- State B: PIN exists -->
+        <div id="pin-state-b" style="display:none">
+          <div class="pin-section">
+            <label for="artist_pin">PIN:</label>
+            <input type="password" name="artist_pin" id="artist_pin" inputmode="numeric" maxlength="8" autocomplete="off" style="max-width:200px" />
+          </div>
+          <details id="forgot-pin-details" style="margin-top:8px">
+            <summary style="cursor:pointer;font-size:13px;color:#888;user-select:none">Forgot PIN?</summary>
+            <div style="border:1px solid #ddd;border-radius:4px;padding:14px;margin-top:8px;background:#fafafa">
+              <label for="reset-admin-pin" style="display:block;margin-bottom:4px">Admin PIN:</label>
+              <input type="password" id="reset-admin-pin" inputmode="numeric" maxlength="8" autocomplete="off" style="max-width:200px;margin-bottom:8px" />
+              <label for="reset-new-pin" style="display:block;margin-bottom:4px">New PIN (4&ndash;8 digits):</label>
+              <input type="password" id="reset-new-pin" inputmode="numeric" maxlength="8" autocomplete="new-password" style="max-width:200px;margin-bottom:8px" />
+              <label for="reset-confirm-pin" style="display:block;margin-bottom:4px">Confirm New PIN:</label>
+              <input type="password" id="reset-confirm-pin" inputmode="numeric" maxlength="8" autocomplete="new-password" style="max-width:200px;margin-bottom:8px" />
+              <div id="reset-pin-error" style="color:#c00;font-size:13px;min-height:18px"></div>
+              <button type="button" id="reset-pin-btn" class="btn">Reset PIN</button>
+            </div>
+          </details>
+        </div>
+
+      </div><!-- /pin-section -->
+
       <label for="tok_placement">Placement of Tattoo:</label>
       <input type="text" name="tok_placement" id="tok_placement" required />
 
@@ -225,7 +317,7 @@ canvas.signature{display:block}
       <div class="sig-wrap">
         <canvas class="signature" id="signature_artist" name="signature_artist"></canvas>
       </div>
-      <div id="sig-status" class="sig-status wait">Waiting for valid PIN</div>
+      <div id="sig-status" class="sig-status wait">Select an artist to begin</div>
       <input type="hidden" name="tok_sig_data" id="tok_sig_data" />
       <input type="hidden" name="signature_artist_status" id="signature_artist_status" value="" />
       <input type="hidden" name="artist_signature_type" id="artist_signature_type" value="" />
@@ -337,7 +429,25 @@ document.addEventListener('DOMContentLoaded', function() {
     c.height     = 150;
     initialize_signature('signature_artist');
     clearCanvas('signature_artist');
-    updateArtistSignatureStatus('Waiting for valid PIN', 'wait');
+    updateArtistSignatureStatus('Select an artist to begin', 'wait');
+
+    var artistSel  = document.getElementById('tok_artist');
+    var pinSection = document.getElementById('pin-section');
+    var pinStateA  = document.getElementById('pin-state-a');
+    var pinStateB  = document.getElementById('pin-state-b');
+    var pinInput   = document.getElementById('artist_pin');
+    var pinTimer   = null;
+
+    // Digits-only enforcement for all PIN inputs
+    ['new-pin-a', 'confirm-pin-a', 'artist_pin', 'reset-admin-pin', 'reset-new-pin', 'reset-confirm-pin'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', function() {
+            var pos = el.selectionStart;
+            el.value = el.value.replace(/[^0-9]/g, '');
+            try { el.setSelectionRange(pos, pos); } catch(e) {}
+        });
+    });
 
     // Manual draw: sync hidden field on pen/mouse lift
     ['mouseup', 'touchend'].forEach(function(ev) {
@@ -351,23 +461,130 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    var pinInput  = document.getElementById('artist_pin');
-    var artistSel = document.getElementById('tok_artist');
-    var pinTimer  = null;
+    function showStateA() {
+        pinStateA.style.display = 'block';
+        pinStateB.style.display = 'none';
+        clearArtistDigitalSignature();
+        updateArtistSignatureStatus('Create your PIN to continue', 'wait');
+        document.getElementById('new-pin-a').value    = '';
+        document.getElementById('confirm-pin-a').value = '';
+        document.getElementById('pin-a-error').textContent = '';
+    }
 
-    pinInput.addEventListener('input', function() {
-        clearTimeout(pinTimer);
-        if (!pinInput.value) { clearArtistDigitalSignature(); return; }
-        updateArtistSignatureStatus('Checking\u2026', 'wait');
-        pinTimer = setTimeout(function() { validateArtistPin(artistSel.value, pinInput.value); }, 500);
-    });
+    function showStateB() {
+        pinStateA.style.display = 'none';
+        pinStateB.style.display = 'block';
+        clearArtistDigitalSignature();
+        updateArtistSignatureStatus('Waiting for valid PIN', 'wait');
+        if (pinInput) pinInput.value = '';
+    }
 
     artistSel.addEventListener('change', function() {
+        var name = artistSel.value;
         clearArtistDigitalSignature();
-        if (pinInput.value) { validateArtistPin(artistSel.value, pinInput.value); }
+        if (!name) {
+            pinSection.style.display = 'none';
+            pinStateA.style.display  = 'none';
+            pinStateB.style.display  = 'none';
+            updateArtistSignatureStatus('Select an artist to begin', 'wait');
+            return;
+        }
+        pinSection.style.display = 'block';
+        updateArtistSignatureStatus('Checking\u2026', 'wait');
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '?has_artist_pin', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            try {
+                var d = JSON.parse(xhr.responseText);
+                if (d.has_pin) { showStateB(); } else { showStateA(); }
+            } catch(e) { updateArtistSignatureStatus('Error checking PIN \u2014 try again', 'err'); }
+        };
+        xhr.onerror = function() { updateArtistSignatureStatus('Network error \u2014 try again', 'err'); };
+        xhr.send('artist=' + encodeURIComponent(name));
+    });
+
+    // State A: Set PIN
+    document.getElementById('set-pin-btn').addEventListener('click', function() {
+        var name    = artistSel.value;
+        var newPin  = document.getElementById('new-pin-a').value;
+        var confPin = document.getElementById('confirm-pin-a').value;
+        var errEl   = document.getElementById('pin-a-error');
+        if (!name)                              { errEl.textContent = 'Please select an artist first.'; return; }
+        if (!/^[0-9]{4,8}$/.test(newPin))      { errEl.textContent = 'PIN must be 4-8 digits only.'; return; }
+        if (newPin !== confPin)                 { errEl.textContent = 'PINs do not match.'; return; }
+        errEl.textContent = '';
+        var btn = this;
+        btn.disabled = true; btn.textContent = 'Saving\u2026';
+        var fd = 'artist=' + encodeURIComponent(name) + '&new_pin=' + encodeURIComponent(newPin) + '&confirm_pin=' + encodeURIComponent(confPin);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '?set_artist_pin', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            btn.disabled = false; btn.textContent = 'Set PIN';
+            try {
+                var d = JSON.parse(xhr.responseText);
+                if (d.ok) {
+                    showStateB();
+                    if (pinInput) { pinInput.value = newPin; validateArtistPin(name, newPin); }
+                } else { errEl.textContent = d.error || 'Failed to set PIN.'; }
+            } catch(e) { errEl.textContent = 'Unexpected error \u2014 try again.'; }
+        };
+        xhr.onerror = function() { btn.disabled = false; btn.textContent = 'Set PIN'; errEl.textContent = 'Network error \u2014 try again.'; };
+        xhr.send(fd);
+    });
+
+    // State B: live PIN validation
+    if (pinInput) {
+        pinInput.addEventListener('input', function() {
+            clearTimeout(pinTimer);
+            if (!pinInput.value) { clearArtistDigitalSignature(); return; }
+            updateArtistSignatureStatus('Checking\u2026', 'wait');
+            pinTimer = setTimeout(function() { validateArtistPin(artistSel.value, pinInput.value); }, 500);
+        });
+    }
+
+    // State B: Reset PIN
+    document.getElementById('reset-pin-btn').addEventListener('click', function() {
+        var name     = artistSel.value;
+        var adminPin = document.getElementById('reset-admin-pin').value;
+        var newPin   = document.getElementById('reset-new-pin').value;
+        var confPin  = document.getElementById('reset-confirm-pin').value;
+        var errEl    = document.getElementById('reset-pin-error');
+        if (!name)                              { errEl.textContent = 'Please select an artist first.'; return; }
+        if (!adminPin)                          { errEl.textContent = 'Admin PIN is required.'; return; }
+        if (!/^[0-9]{4,8}$/.test(newPin))      { errEl.textContent = 'New PIN must be 4-8 digits only.'; return; }
+        if (newPin !== confPin)                 { errEl.textContent = 'New PINs do not match.'; return; }
+        errEl.textContent = '';
+        var btn = this;
+        btn.disabled = true; btn.textContent = 'Resetting\u2026';
+        var fd = 'artist=' + encodeURIComponent(name) + '&admin_pin=' + encodeURIComponent(adminPin) + '&new_pin=' + encodeURIComponent(newPin) + '&confirm_pin=' + encodeURIComponent(confPin);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '?reset_artist_pin', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            btn.disabled = false; btn.textContent = 'Reset PIN';
+            try {
+                var d = JSON.parse(xhr.responseText);
+                if (d.ok) {
+                    document.getElementById('forgot-pin-details').removeAttribute('open');
+                    document.getElementById('reset-admin-pin').value   = '';
+                    document.getElementById('reset-new-pin').value     = '';
+                    document.getElementById('reset-confirm-pin').value = '';
+                    if (pinInput) { pinInput.value = newPin; validateArtistPin(name, newPin); }
+                } else { errEl.textContent = d.error || 'Failed to reset PIN.'; }
+            } catch(e) { errEl.textContent = 'Unexpected error \u2014 try again.'; }
+        };
+        xhr.onerror = function() { btn.disabled = false; btn.textContent = 'Reset PIN'; errEl.textContent = 'Network error \u2014 try again.'; };
+        xhr.send(fd);
     });
 
     document.querySelector('form').addEventListener('submit', function(e) {
+        if (!artistSel.value) {
+            alert('Please select an artist first.');
+            e.preventDefault();
+            return false;
+        }
         var status = document.getElementById('signature_artist_status');
         if (!status || status.value !== 'yes') {
             alert('Please verify your PIN to apply your digital signature, or draw your signature manually.');

@@ -64,6 +64,31 @@ function check_artist_pin($pin) {
     return hash_equals(ARTIST_PIN, (string)$pin);
 }
 
+function has_artist_pin($name) {
+    $slug = preg_replace('/[^a-z0-9]+/', '_', strtolower(trim($name)));
+    if (!$slug) return false;
+    return file_exists(__DIR__ . '/configs/sigs/' . $slug . '_pin.dat');
+}
+
+function verify_artist_pin($name, $pin) {
+    $slug = preg_replace('/[^a-z0-9]+/', '_', strtolower(trim($name)));
+    if (!$slug) return false;
+    $path = __DIR__ . '/configs/sigs/' . $slug . '_pin.dat';
+    if (!file_exists($path)) return false;
+    $hash = trim(file_get_contents($path));
+    return password_verify((string)$pin, $hash);
+}
+
+function save_artist_pin($name, $pin) {
+    $pin = (string)$pin;
+    if (!preg_match('/^[0-9]{4,8}$/', $pin)) return;
+    $slug = preg_replace('/[^a-z0-9]+/', '_', strtolower(trim($name)));
+    if (!$slug) return;
+    $dir = __DIR__ . '/configs/sigs';
+    if (!is_dir($dir)) mkdir($dir, 0755, true);
+    file_put_contents($dir . '/' . $slug . '_pin.dat', password_hash($pin, PASSWORD_BCRYPT));
+}
+
 function save_artist_sig($artist_name, $sig_data) {
     // Persist the artist signature so it can be auto-filled next visit
     $dir  = __DIR__ . '/configs/sigs';
