@@ -1069,44 +1069,85 @@ I hereby declare that I am of legal age (with valid proof of age) and am compete
 			<div class="break"></div>
 
 			<div id="input_signature" class="label"><?=display_label('signature')?><span class="required">*</span></div>
-			<?php if($skin === 'print') { ?>
-				<div class="typed-sig-display"><?=htmlspecialchars($_POST['signature_client_typed'] ?? '')?></div>
-			<?php } elseif($submit) { ?>
-				<div class="typed-sig-display"><?=htmlspecialchars($_POST['signature_client_typed'] ?? '')?></div>
-			<?php } else { ?>
-				<input type="text" name="signature_client_typed" id="signature_client_typed"
-					class="typed-sig-input" placeholder="Type your full legal name"
-					autocomplete="off" oninput="updateClientSigStatus()" />
-			<?php } ?>
-			<div class="break"></div>
-
-			<?php if($skin !== 'print' && !$submit) { ?>
-			<div class="no_label" id="input_esign_consent" style="clear:both;padding-top:4px;">
-				<input type="checkbox" id="esign_consent" name="esign_consent" value="1" onchange="updateClientSigStatus()" />
-				<span style="position:relative;bottom:6px;margin-left:6px;font-size:0.9em;">I agree to sign this document electronically. I understand this constitutes a legally binding signature.</span>
-			</div>
-			<?php } elseif($submit) { ?>
-			<div class="no_label" style="clear:both;padding-top:4px;">
-				<img src="img/checked_box.png" /> <span style="position:relative;bottom:8px;font-size:0.9em;">Electronically signed</span>
-			</div>
-			<?php } elseif($skin === 'print') { ?>
-			<div style="clear:both;padding-top:4px;padding-left:115px;">
-				<div class="fake_checkbox" style="float:left;margin-right:8px;"></div>
-				<span style="position:relative;bottom:5px;font-size:0.9em;">Electronic signature consent given</span>
-			</div>
-			<?php } ?>
-
+			<br />
+			<?php if(!$submit) {
+				if($skin === 'print') {
+					echo '<div class="fake_signature"></div>';
+				} else { ?>
+				<canvas class="signature" id="signature_client" name="signature_client" data-typed-sig="true"></canvas>
+				<div style="margin-left:60px;margin-top:8px;">
+					<input type="text" name="signature_client_typed" id="signature_client_typed"
+						placeholder="Type your full legal name" autocomplete="off"
+						style="width:400px;" oninput="clientSigType(this.value)" />
+				</div>
+				<div class="no_label" id="input_esign_consent" style="clear:both;padding-top:8px;">
+					<input type="checkbox" id="esign_consent" name="esign_consent" value="1" onchange="updateClientSigStatus()" />
+					<span style="position:relative;bottom:6px;margin-left:6px;font-size:0.9em;">I agree to sign this document electronically. I understand this constitutes a legally binding signature.</span>
+				</div>
+				<?php } 
+			} else {
+				?><img src="<?=htmlspecialchars($_POST['signature_client_data'] ?? '')?>"><?php
+				if($submit && !empty($_POST['signature_client_typed'])) {
+					?><div class="no_label" style="clear:both;padding-top:4px;"><img src="img/checked_box.png" /> <span style="position:relative;bottom:8px;font-size:0.9em;">Electronically signed</span></div><?php
+				}
+			} ?>
+			<input type="hidden" name="signature_client_data" id="signature_client_data" />
 			<input type="hidden" name="signature_client_status" id="signature_client_status" value="" />
 			<?php if(!$submit && $skin !== 'print') { ?>
 			<script>
+			function clientSigType(text) {
+				var c = document.getElementById('signature_client');
+				if (!c) return;
+				var ctx = c.getContext('2d');
+				ctx.clearRect(0, 0, c.width, c.height);
+				ctx.fillStyle = '#fff';
+				ctx.fillRect(0, 0, c.width, c.height);
+				if (text.trim()) {
+					ctx.fillStyle = '#ccc';
+					var len = 20, pad = 20, gap = 5;
+					for (var x = pad; x < c.width - pad; x++) { ctx.fillRect(x, c.height - 38, len, 1); x = x + len + gap; }
+					ctx.fillStyle = '#1a1a8c';
+					ctx.font = 'italic bold 30px Georgia, "Times New Roman", serif';
+					ctx.textAlign = 'center';
+					ctx.textBaseline = 'middle';
+					ctx.fillText(text, c.width / 2, c.height / 2 - 8);
+					document.getElementById('signature_client_data').value = c.toDataURL('image/png');
+				} else {
+					ctx.fillStyle = '#ff7676';
+					ctx.font = '40px sans-serif';
+					ctx.fillText('x', 20, 118);
+					ctx.fillStyle = '#ccc';
+					var len2 = 20, pad2 = 20, gap2 = 5;
+					for (var x2 = pad2; x2 < c.width - pad2; x2++) { ctx.fillRect(x2, c.height - 38, len2, 1); x2 = x2 + len2 + gap2; }
+					document.getElementById('signature_client_data').value = '';
+				}
+				updateClientSigStatus();
+			}
 			function updateClientSigStatus() {
-				var typed  = document.getElementById('signature_client_typed');
+				var typed   = document.getElementById('signature_client_typed');
 				var consent = document.getElementById('esign_consent');
 				var status  = document.getElementById('signature_client_status');
 				if (typed && consent && status) {
 					status.value = (typed.value.trim() !== '' && consent.checked) ? 'yes' : '';
 				}
 			}
+			document.addEventListener('DOMContentLoaded', function() {
+				var c = document.getElementById('signature_client');
+				if (!c) return;
+				var rect = c.parentElement.getBoundingClientRect();
+				c.width  = Math.floor(rect.width) || 472;
+				c.height = 150;
+				var ctx = c.getContext('2d');
+				ctx.fillStyle = '#fff';
+				ctx.fillRect(0, 0, c.width, c.height);
+				ctx.fillStyle = '#ff7676';
+				ctx.font = '40px sans-serif';
+				ctx.fillText('x', 20, 118);
+				var ctx2 = c.getContext('2d');
+				ctx2.fillStyle = '#ccc';
+				var len = 20, pad = 20, gap = 5;
+				for (var x = pad; x < c.width - pad; x++) { ctx2.fillRect(x, c.height - 38, len, 1); x = x + len + gap; }
+			});
 			</script>
 			<?php } ?>
 		<div class="break"></div>

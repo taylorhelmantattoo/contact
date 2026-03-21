@@ -650,22 +650,14 @@ function confirmExit()
 	return "Are you sure you want to leave this release form?";
 }
 
-// ── draw_init – initializes signature canvases and typed-name auto-fill ──────
+// ── draw_init – initializes signature canvases ───────────────────────────────
 function draw_init() {
-	// Initialize every signature canvas (skip the photo/camera canvas)
+	// Initialize every signature canvas (skip photo canvas and typed-only canvases)
 	var canvases = document.getElementsByTagName('canvas');
 	for (var i = 0; i < canvases.length; i++) {
-		if (canvases[i].id !== 'photo') {
+		if (canvases[i].id !== 'photo' && !canvases[i].dataset.typedSig) {
 			initialize_signature(canvases[i].id);
 		}
-	}
-
-	// When the Name field is typed, mirror it as a cursive signature
-	var nameInput = document.getElementById('name');
-	if (nameInput) {
-		nameInput.addEventListener('input', function() {
-			redraw_typed_signature('signature_client', this.value);
-		});
 	}
 
 	insertDate();
