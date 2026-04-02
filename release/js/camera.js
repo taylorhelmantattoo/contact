@@ -117,16 +117,18 @@ var camera_init = initializeCameraCapture;
 // ── snapshot / takesnapshot ───────────────────────────────────────────────────
 function snapshot() {
     if (!camera_has_init) return;
-    take_photo.style.display = 'none';
-    photo.style.display = 'none';
-    video.style.display = 'block';
+    if (take_photo) take_photo.style.display = 'none';
+    if (photo)      photo.style.display      = 'none';
+    if (video)      video.style.display      = 'block';
     countdown(3);
 }
 
 function takesnapshot() {
-    photo.getContext('2d').drawImage(video, 0, 0, photo.width, photo.height);
-    photo.style.display = 'block';
-    video.style.display = 'none';
+    if (photo && video) {
+        photo.getContext('2d').drawImage(video, 0, 0, photo.width, photo.height);
+        photo.style.display = 'block';
+        video.style.display = 'none';
+    }
     canvas_status('photo', true);
     // Show inline success feedback
     var upl = document.getElementById('uploadcontainer');
