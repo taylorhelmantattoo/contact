@@ -577,6 +577,8 @@
       color: var(--text-soft);
       margin: 2px 0 10px;
     }
+    .location-name    { font-weight: 700; font-size: 15px; margin: 0 0 2px; }
+    .location-address { font-size: 14px; color: var(--text-soft); line-height: 1.55; margin: 0 0 14px; }
   </style>
 </head>
 <body>
@@ -621,6 +623,17 @@
         <a class="btn btn-dark" href="availability.html">Check Availability &rarr;</a>
       </div>
     </div>
+    <div class="content-card">
+      <div class="section-label">Studio Location</div>
+      <p class="location-name">Soul Fire Tattoo Studio</p>
+      <p class="location-address">
+        227 Wharncliffe Road South<br>
+        London, Ontario, Canada
+      </p>
+      <a class="btn btn-dark"
+         href="https://www.google.com/maps/search/?api=1&query=Soul+Fire+Tattoo+Studio+London+Ontario"
+         target="_blank" rel="noopener noreferrer">Open in Maps</a>
+    </div>
     <div class="intro-card">
       <h1>Save Taylor’s Email</h1>
       <p>
@@ -635,6 +648,7 @@
         <a class="btn btn-email" href="/taylor-helman-tattoo.vcf" download="taylor-helman-tattoo.vcf" onclick="saveVcf(event)">Save Taylor's Email</a>
         <button class="btn btn-copy" id="copyEmailBtn" onclick="copyEmail()">Copy Email Address</button>
         <a class="btn btn-dark" href="portfolio.html">View My Work</a>
+        <a class="btn btn-dark" href="https://ig.me/m/taylorhelmantattoo" target="_blank" rel="noopener noreferrer">Chat on Instagram</a>
       </div>
       <div class="helper">
         <strong>iPhone tip:</strong> Long-press &ldquo;Save Taylor&rsquo;s Email&rdquo; then dismiss the menu &mdash; the contact card will already be open behind it ready to save.<br><br>
