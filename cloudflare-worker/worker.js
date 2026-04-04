@@ -43,7 +43,6 @@ const CONFIG = {
 };
 
 const DISCLAIMER =
-  'Availability is updated every 15 minutes and is subject to change. ' +
   'Submitting a request does not guarantee a booking \u2014 all appointments are ' +
   'manually confirmed by Taylor. Times shown in Eastern Time (ET).';
 
